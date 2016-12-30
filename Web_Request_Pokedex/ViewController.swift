@@ -9,11 +9,14 @@
 import UIKit
 import AVFoundation
 
-class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
+class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UICollectionViewDataSource, UISearchBarDelegate {
     
     @IBOutlet weak var collection: UICollectionView!
+    @IBOutlet weak var searchBar: UISearchBar!
     
     var pokemon = [Pokemon]()
+    var filteredPokemon = [Pokemon]()
+    var inSearchMode = false
     var musicPlayer: AVAudioPlayer!
     
     override func viewDidLoad() {
@@ -22,6 +25,9 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         collection.dataSource = self
         collection.delegate = self
         
+        searchBar.delegate = self
+        searchBar.returnKeyType = UIReturnKeyType.done
+        
         parsePokemonCSV()
         initAudio()
     }
@@ -29,8 +35,13 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Pokecell", for: indexPath) as? Pokecell {
             
-            let individualPokemon = pokemon[indexPath.row]
-            cell.configureCell(individualPokemon)
+            if inSearchMode {
+                let individualPokemon = filteredPokemon[indexPath.row]
+                cell.configureCell(individualPokemon)
+            } else {
+                let individualPokemon = pokemon[indexPath.row]
+                cell.configureCell(individualPokemon)
+            }
             
             return cell
         } else {
@@ -60,12 +71,37 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         
     }
     
-//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        <#code#>
-//    }
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        view.endEditing(true)
+        
+        var poke: Pokemon!
+        if inSearchMode {
+            poke = filteredPokemon[indexPath.row]
+        } else {
+            poke = pokemon[indexPath.row]
+        }
+        performSegue(withIdentifier: "PokemonDetailVC", sender: poke)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "PokemonDetailVC" {
+            if let destination = segue.destination as? PokemonDetailVC {
+                if let poke = sender as? Pokemon {
+                    destination.pokemon = poke // This is the var pokemon in PokemonDetailVC
+                }
+            }
+            
+        }
+    }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
+        if inSearchMode {
+            return filteredPokemon.count
+        }
+        
         return pokemon.count
+        
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -99,6 +135,31 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         }
     }
     
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text == nil || searchBar.text == "" {
+            inSearchMode = false
+            collection.reloadData()
+            view.endEditing(true) // This is needed otherwise after inputting text and click search the keyboard doesn't go away
+        } else {
+            inSearchMode = true
+            
+            let text = searchBar.text!
+            filteredPokemon = pokemon.filter( {$0.name.localizedStandardRange(of: text) != nil })
+            
+            // $0 can be think of as a placeholder for any and all objects in pokemon
+            collection.reloadData()
+        }
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        view.endEditing(true)
+        // This is needed otherwise after inputting text and click search the keyboard doesn't go away
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        view.endEditing(true)
+        // This is needed otherwise after inputting text and click search the keyboard doesn't go away
+    }
     
 }
 
