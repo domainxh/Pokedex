@@ -60,12 +60,8 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
                 
                 let ID = row["id"]!
                 let name = row["identifier"]!
-                let height = row["height"]!
-                let weight = row["weight"]!
-                let defense = row["defense"]!
-                let attack = row["attack"]!
                 
-                let individualPokemon = Pokemon(name: name, id: ID, height: height, weight: weight, defense: defense, attack: attack)
+                let individualPokemon = Pokemon(name: name, id: ID)
                 pokemon.append(individualPokemon)
                 
             }

@@ -19,6 +19,7 @@ class PokemonDetailVC: UIViewController {
     @IBOutlet weak var defenseLabel: UILabel!
     @IBOutlet weak var pokedexID: UILabel!
     @IBOutlet weak var baseAttack: UILabel!
+    @IBOutlet weak var nextEvoString: UILabel!
     
     @IBOutlet weak var imageLabel: UIImageView!
     @IBOutlet weak var nextEvoImage: UIImageView!
@@ -30,12 +31,13 @@ class PokemonDetailVC: UIViewController {
 
         nameLabel.text = pokemon.name
         pokedexID.text = pokemon.id
-        heightLabel.text = pokemon.height
-        weightLabel.text = pokemon.weight
-        defenseLabel.text = pokemon.defense
-        baseAttack.text = pokemon.attack
+ 
         
     }
 
-
+    
+    @IBAction func backButtonPressed(_ sender: UIButton) {
+        dismiss(animated: true, completion: nil)
+    }
+    
 }

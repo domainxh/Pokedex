@@ -41,13 +41,9 @@ class Pokemon {
         return _attack
     }
     
-    init (name: String, id: String, height: String, weight: String, defense: String, attack: String) {
+    init (name: String, id: String) {
         self._name = name
         self._id = id
-        self._attack = attack
-        self._defense = defense
-        self._height = height
-        self._weight = weight
     }
     
 }
