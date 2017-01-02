@@ -20,24 +20,49 @@ class PokemonDetailVC: UIViewController {
     @IBOutlet weak var pokedexID: UILabel!
     @IBOutlet weak var baseAttack: UILabel!
     @IBOutlet weak var nextEvoString: UILabel!
-    
-    @IBOutlet weak var imageLabel: UIImageView!
+    @IBOutlet weak var currentEvo1: UIImageView!
+    @IBOutlet weak var currentEvo2: UIImageView!
     @IBOutlet weak var nextEvoImage: UIImageView!
+    @IBOutlet weak var descriptionLabel: UILabel!
     
     @IBOutlet weak var bioMoves: UISegmentedControl!
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        nameLabel.text = pokemon.name
+        let image = UIImage(named: pokemon.id)
+        currentEvo1.image = image
+        currentEvo2.image = image
+        nameLabel.text = pokemon.name.capitalized
         pokedexID.text = pokemon.id
  
-        
+        pokemon.downloadPokemonDetail {
+            self.updateUI()
+        }
     }
 
     
     @IBAction func backButtonPressed(_ sender: UIButton) {
         dismiss(animated: true, completion: nil)
+    }
+    
+    func updateUI() {
+        heightLabel.text = pokemon.height
+        defenseLabel.text = pokemon.defense
+        weightLabel.text = pokemon.weight
+        baseAttack.text = pokemon.attack
+        typeLabel.text = pokemon.typelabel
+        descriptionLabel.text = pokemon.description
+        
+        if pokemon.nextEvolutionId == "" {
+            nextEvoString.text = "No Evolutions"
+            nextEvoImage.isHidden = true
+        } else {
+            nextEvoImage.isHidden = false
+            nextEvoImage.image = UIImage(named: pokemon.nextEvolutionId)
+            let str = "Next Evolution: \(pokemon.nextEvolutionName) - LVL \(pokemon.nextEvolutionLevel)"
+            nextEvoString.text = str
+        }
     }
     
 }
